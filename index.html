@@ -8,55 +8,18 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
-    body {
-      box-sizing: border-box;
-      font-family: 'Prompt', sans-serif;
-    }
-    .gradient-bg {
-      background: linear-gradient(135deg, #dc2626 0%, #f59e0b 50%, #fbbf24 100%);
-    }
-    .card-shadow {
-      box-shadow: 0 10px 40px rgba(220, 38, 38, 0.15);
-    }
-    .tab-active {
-      background: linear-gradient(135deg, #dc2626, #ea580c);
-      color: white;
-      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
-    }
-    .chart-container {
-      position: relative;
-      height: 280px;
-    }
-    .loading-spinner {
-      border: 4px solid #fef3c7;
-      border-top: 4px solid #dc2626;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .fade-in {
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 50px rgba(220, 38, 38, 0.25);
-    }
-    .pulse-dot {
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
+    body { box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #dc2626 0%, #f59e0b 50%, #fbbf24 100%); }
+    .card-shadow { box-shadow: 0 10px 40px rgba(220, 38, 38, 0.15); }
+    .tab-active { background: linear-gradient(135deg, #dc2626, #ea580c); color: white; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); }
+    .chart-container { position: relative; height: 280px; }
+    .loading-spinner { border: 4px solid #fef3c7; border-top: 4px solid #dc2626; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 50px rgba(220, 38, 38, 0.25); }
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #fef3c7; border-radius: 4px; }
     ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #dc2626, #f59e0b); border-radius: 4px; }
@@ -64,22 +27,37 @@
  </head>
  <body class="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
   <div id="app" class="h-full overflow-auto">
+   
+   <!-- Header -->
    <header class="gradient-bg text-white py-6 px-4 shadow-2xl">
     <div class="max-w-7xl mx-auto flex items-center gap-4">
      <img src="https://img2.pic.in.th/logob0b7643db577ceee.png" alt="Logo" class="w-16 h-16 rounded-full bg-white p-1 shadow-lg" onerror="this.src='https://via.placeholder.com/64?text=WMK';">
      <div>
-      <h1 id="app-title" class="text-2xl md:text-3xl font-bold drop-shadow-lg">ข้อมูลสารสนเทศนักเรียน</h1>
-      <p id="school-name" class="text-2xl md:text-3xl font-bold drop-shadow-lg">โรงเรียนวัดแม่กะ</p>
+      <h1 class="text-2xl md:text-3xl font-bold drop-shadow-lg">ข้อมูลสารสนเทศนักเรียน</h1>
+      <p class="text-2xl md:text-3xl font-bold drop-shadow-lg">โรงเรียนวัดแม่กะ</p>
      </div>
-     <div class="ml-auto hidden md:flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-      <div class="w-2 h-2 bg-green-400 rounded-full pulse-dot"></div>
-      <span class="text-sm">เชื่อมต่อข้อมูลสำเร็จ</span>
+     <div id="connection-status" class="ml-auto hidden md:flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
+      <div id="status-dot" class="w-2 h-2 bg-green-400 rounded-full pulse-dot"></div>
+      <span id="status-text" class="text-sm">เชื่อมต่อข้อมูลแล้ว</span>
      </div>
     </div>
    </header>
 
+   <!-- Error Alert (Hidden by default) -->
+   <div id="error-alert" class="max-w-7xl mx-auto px-4 mt-4 hidden">
+     <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg flex items-start gap-3 shadow-md">
+       <div class="text-red-500">
+         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+       </div>
+       <div>
+         <p class="text-red-800 font-bold text-sm">ข้อผิดพลาดในการเชื่อมต่อ</p>
+         <p id="error-message" class="text-red-700 text-xs">ไม่สามารถดึงข้อมูลจาก Google Sheets ได้ โปรดตรวจสอบการ Deploy หรืออินเทอร์เน็ต</p>
+       </div>
+       <button onclick="window.location.reload()" class="ml-auto bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded text-xs font-medium transition-colors">ลองใหม่</button>
+     </div>
+   </div>
+
    <div class="max-w-7xl mx-auto px-4 py-6">
-    <!-- Tab Navigation -->
     <div class="flex flex-wrap gap-3 mb-6">
      <button id="tab-year" onclick="switchTab('year')" class="tab-active px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> ข้อมูลแยกตามรายปี 
@@ -89,33 +67,32 @@
      </button>
     </div>
 
-    <!-- Year Tab Content -->
+    <!-- Year View -->
     <div id="year-content" class="fade-in">
      <div class="bg-white rounded-2xl p-6 mb-6 card-shadow">
       <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white">📅</span> เลือกปีการศึกษา</h3>
-      <div id="year-buttons" class="flex flex-wrap gap-3"></div>
+      <div id="year-buttons" class="flex flex-wrap gap-3">
+        <p id="year-loading-msg" class="text-gray-400 text-sm animate-pulse">กำลังตรวจสอบฐานข้อมูล...</p>
+      </div>
      </div>
 
      <div id="loading-year" class="hidden flex flex-col items-center justify-center py-20">
       <div class="loading-spinner mb-4"></div>
-      <p class="text-gray-600">กำลังโหลดข้อมูล...</p>
+      <p class="text-gray-600">กำลังดึงข้อมูลสารสนเทศ...</p>
      </div>
-
      <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 
-    <!-- Topic Tab Content -->
+    <!-- Topic View -->
     <div id="topic-content" class="hidden fade-in">
      <div class="bg-white rounded-2xl p-6 mb-6 card-shadow">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white">📊</span> เลือกหัวข้อที่ต้องการเปรียบเทียบ</h3>
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white">📊</span> เลือกหัวข้อเปรียบเทียบ</h3>
       <div id="topic-buttons" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
      </div>
-
      <div id="loading-topic" class="hidden flex flex-col items-center justify-center py-20">
       <div class="loading-spinner mb-4"></div>
-      <p class="text-gray-600">กำลังโหลดข้อมูล...</p>
+      <p class="text-gray-600">กำลังประมวลผลข้อมูลเปรียบเทียบ...</p>
      </div>
-
      <div id="comparison-chart-container" class="hidden bg-white rounded-2xl p-6 card-shadow">
       <h3 id="comparison-title" class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"></h3>
       <div class="h-96">
@@ -127,61 +104,83 @@
 
    <footer class="gradient-bg text-white py-4 px-4 mt-8">
     <div class="max-w-7xl mx-auto text-center">
-     <p class="text-amber-100 text-sm">© 2569 โรงเรียนวัดแม่กะ | ระบบข้อมูลสารสนเทศนักเรียน</p>
+     <p class="text-amber-100 text-sm">© ระบบสารสนเทศนักเรียนอัตโนมัติ | โรงเรียนวัดแม่กะ</p>
     </div>
    </footer>
   </div>
 
   <script>
+    // URL สำหรับ Google Apps Script
     const API_URL = 'https://script.google.com/macros/s/AKfycbwcrGA_CapQ2P5W7I9q33PAm0mQkwaQbGoNcRQHuAzRGChjIB_2IMP5ew70y4UV1mK0/exec';
-    const SHEET_NAMES = ['2566', '2567', '2568'];
+    
     const COLUMNS = ['ชั้น', 'เพศ', 'สัญชาติ', 'เชื้อชาติ', 'ศาสนา', 'สถานภาพสมรสของบิดามารดา', 'ตำบล', 'อำเภอ', 'จังหวัด'];
     const COLUMN_ICONS = {
       'ชั้น': '🎓', 'เพศ': '👤', 'สัญชาติ': '🌍', 'เชื้อชาติ': '🧬', 'ศาสนา': '🙏',
       'สถานภาพสมรสของบิดามารดา': '💑', 'ตำบล': '📍', 'อำเภอ': '🏘️', 'จังหวัด': '🗺️'
     };
 
-    // ปรับปรุงชุดสีให้สดใสและหลากหลาย (Vibrant Palette)
-    const CHART_COLORS = [
-      '#FF6384', // ชมพูแดง
-      '#36A2EB', // ฟ้าสด
-      '#FFCE56', // เหลืองทอง
-      '#4BC0C0', // เขียวมิ้นท์
-      '#9966FF', // ม่วงสว่าง
-      '#FF9F40', // ส้มสด
-      '#26C6DA', // ฟ้าเทอร์ควอยซ์
-      '#66BB6A', // เขียวสด
-      '#FFA726', // ส้มเหลือง
-      '#AB47BC', // ม่วงกล้วยไม้
-      '#EF5350', // แดงอ่อน
-      '#5C6BC0', // น้ำเงินคราม
-      '#26A69A', // เขียวแกมน้ำเงิน
-      '#D4E157', // เขียวมะนาว
-      '#FFEE58'  // เหลืองสว่าง
-    ];
+    const CHART_COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#26C6DA', '#66BB6A', '#FFA726', '#AB47BC', '#EF5350', '#5C6BC0', '#26A69A', '#D4E157', '#FFEE58'];
 
+    let SHEET_NAMES = []; 
     let allData = {};
     let charts = {};
     let comparisonChart = null;
+
+    // แสดงข้อความแจ้งเตือนข้อผิดพลาด
+    function showError(msg) {
+      document.getElementById('error-alert').classList.remove('hidden');
+      document.getElementById('error-message').innerText = msg;
+      
+      const statusDot = document.getElementById('status-dot');
+      const statusText = document.getElementById('status-text');
+      if(statusDot) {
+        statusDot.classList.replace('bg-green-400', 'bg-red-500');
+        statusText.innerText = 'ขาดการเชื่อมต่อ';
+      }
+    }
+
+    // ฟังก์ชันดึงรายชื่อปี พร้อมระบบจัดการ Error
+    async function fetchAvailableYears() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+        
+        const response = await fetch(`${API_URL}?action=getSheets`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const years = await response.json();
+        
+        return Array.isArray(years) 
+          ? years.filter(y => /^\d{4}$/.test(y)).sort((a, b) => parseInt(a) - parseInt(b))
+          : [];
+      } catch (error) {
+        console.warn('Cannot fetch years dynamically, using fallback:', error);
+        if (error.name === 'AbortError') showError('การเชื่อมต่อใช้เวลานานเกินไป');
+        else showError('ไม่สามารถดึงข้อมูลปีการศึกษาได้ (Failed to fetch)');
+        return ['2566', '2567', '2568']; 
+      }
+    }
+
+    // ฟังก์ชันดึงข้อมูลชีท พร้อมระบบจัดการ Error
+    async function fetchSheetData(sheetName) {
+      try {
+        const response = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return Array.isArray(data) ? data.filter(row => Object.values(row).some(v => v !== '')) : [];
+      } catch (error) {
+        console.error(`Fetch Error for ${sheetName}:`, error);
+        showError(`ไม่สามารถดึงข้อมูลปี ${sheetName} ได้`);
+        return [];
+      }
+    }
 
     function getValue(row, key) {
       if (!row) return 'ไม่ระบุ';
       const actualKey = Object.keys(row).find(k => k.trim() === key.trim());
       const val = actualKey ? row[actualKey] : null;
-      if (val === null || val === undefined || val === '') return 'ไม่ระบุ';
-      return String(val).trim();
-    }
-
-    async function fetchSheetData(sheetName) {
-      try {
-        const response = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        return Array.isArray(data) ? data.filter(row => Object.values(row).some(v => v !== '')) : [];
-      } catch (error) {
-        console.error(`Error fetching data for ${sheetName}:`, error);
-        return [];
-      }
+      return (val === null || val === undefined || val === '') ? 'ไม่ระบุ' : String(val).trim();
     }
 
     function countOccurrences(data, column) {
@@ -201,13 +200,11 @@
       const cardHtml = `
         <div class="bg-white rounded-2xl p-5 card-shadow stat-card transition-all duration-300 fade-in">
           <h4 class="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white">${icon}</span>
+            <span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white text-xs">${icon}</span>
             <span class="truncate">${title}</span>
             <span class="ml-auto text-xs font-normal text-gray-500 shrink-0">รวม ${total}</span>
           </h4>
-          <div class="chart-container">
-            <canvas id="${chartId}"></canvas>
-          </div>
+          <div class="chart-container"><canvas id="${chartId}"></canvas></div>
         </div>
       `;
       container.insertAdjacentHTML('beforeend', cardHtml);
@@ -220,78 +217,60 @@
       charts[chartId] = new Chart(ctx, {
         type: isBar ? 'bar' : 'doughnut',
         data: {
-          labels: labels,
-          datasets: [{
-            data: values,
-            backgroundColor: CHART_COLORS.slice(0, labels.length),
-            borderWidth: isBar ? 0 : 2,
-            borderColor: '#fff',
-            borderRadius: isBar ? 8 : 0
+          labels,
+          datasets: [{ 
+            data: values, 
+            backgroundColor: CHART_COLORS.slice(0, labels.length), 
+            borderWidth: isBar ? 0 : 2, 
+            borderColor: '#fff', 
+            borderRadius: isBar ? 8 : 0 
           }]
         },
         options: {
-          responsive: true,
+          responsive: true, 
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: !isBar,
-              position: 'right',
-              labels: { font: { family: 'Prompt', size: 10 }, usePointStyle: true, padding: 10 }
-            },
-            tooltip: {
+            legend: { display: !isBar, position: 'right', labels: { font: { family: 'Prompt', size: 10 }, usePointStyle: true } },
+            tooltip: { 
               backgroundColor: 'rgba(0,0,0,0.8)',
               titleFont: { family: 'Prompt' },
               bodyFont: { family: 'Prompt' },
-              callbacks: {
-                label: (ctx) => `${ctx.label}: ${ctx.raw} คน (${((ctx.raw/total)*100).toFixed(1)}%)`
-              }
+              callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} คน (${((ctx.raw/total)*100).toFixed(1)}%)` } 
             }
           },
-          scales: isBar ? {
-            y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { font: { family: 'Prompt', size: 10 } } },
-            x: { grid: { display: false }, ticks: { font: { family: 'Prompt', size: 10 } } }
-          } : {}
+          scales: isBar ? { y: { beginAtZero: true }, x: { ticks: { font: { size: 9, family: 'Prompt' } } } } : {}
         }
       });
     }
 
     async function loadYearData(year) {
+      if (!year) return;
+      
       document.querySelectorAll('#year-buttons button').forEach(btn => {
         btn.classList.remove('tab-active');
         btn.classList.add('bg-white', 'text-gray-700');
       });
       const activeBtn = document.querySelector(`button[data-year="${year}"]`);
-      if (activeBtn) {
-        activeBtn.classList.add('tab-active');
-        activeBtn.classList.remove('bg-white', 'text-gray-700');
-      }
+      if (activeBtn) { activeBtn.classList.add('tab-active'); activeBtn.classList.remove('bg-white', 'text-gray-700'); }
 
       document.getElementById('loading-year').classList.remove('hidden');
       document.getElementById('charts-grid').innerHTML = '';
-      
       Object.values(charts).forEach(c => c.destroy());
       charts = {};
 
       if (!allData[year]) allData[year] = await fetchSheetData(year);
-      const data = allData[year];
-
       document.getElementById('loading-year').classList.add('hidden');
 
-      if (!data || data.length === 0) {
-        document.getElementById('charts-grid').innerHTML = `<p class="col-span-full text-center py-10 text-gray-400">ไม่พบข้อมูลของปี ${year}</p>`;
+      if (!allData[year] || !allData[year].length) {
+        document.getElementById('charts-grid').innerHTML = `<p class="col-span-full text-center py-10 text-gray-400">ยังไม่มีข้อมูลของปี ${year} หรือการเชื่อมต่อผิดพลาด</p>`;
         return;
       }
-
-      COLUMNS.forEach(col => {
-        const counts = countOccurrences(data, col);
-        createChart(col, col, counts, COLUMN_ICONS[col]);
-      });
+      COLUMNS.forEach(col => createChart(col, col, countOccurrences(allData[year], col), COLUMN_ICONS[col]));
     }
 
     async function selectTopic(topic, element) {
       document.querySelectorAll('.topic-btn').forEach(btn => btn.classList.remove('ring-2', 'ring-red-500', 'bg-red-50'));
       element.classList.add('ring-2', 'ring-red-500', 'bg-red-50');
-
       document.getElementById('loading-topic').classList.remove('hidden');
       document.getElementById('comparison-chart-container').classList.add('hidden');
 
@@ -299,44 +278,31 @@
 
       document.getElementById('loading-topic').classList.add('hidden');
       document.getElementById('comparison-chart-container').classList.remove('hidden');
-      document.getElementById('comparison-title').innerHTML = `
-        <span class="w-10 h-10 bg-gradient-to-r from-red-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-lg">${COLUMN_ICONS[topic]}</span>
-        เปรียบเทียบข้อมูล: ${topic}
-      `;
+      document.getElementById('comparison-title').innerHTML = `<span class="w-10 h-10 bg-gradient-to-r from-red-500 to-amber-500 rounded-xl flex items-center justify-center text-white">${COLUMN_ICONS[topic]}</span> เปรียบเทียบ: ${topic}`;
 
-      const allLabelsSet = new Set();
+      const allLabels = new Set();
       SHEET_NAMES.forEach(y => {
-          const counts = countOccurrences(allData[y], topic);
-          Object.keys(counts).forEach(l => allLabelsSet.add(l));
+        if (allData[y]) Object.keys(countOccurrences(allData[y], topic)).forEach(l => allLabels.add(l));
       });
-      const labels = Array.from(allLabelsSet);
+      const labels = Array.from(allLabels);
 
-      const datasets = SHEET_NAMES.map((y, i) => {
-        const counts = countOccurrences(allData[y], topic);
-        return {
-          label: `ปี ${y}`,
-          data: labels.map(l => counts[l] || 0),
-          backgroundColor: CHART_COLORS[i * 2 % CHART_COLORS.length], // เลือกสีจากชุดสีสดใส
-          borderColor: 'transparent',
-          borderRadius: 6
-        };
-      });
+      const datasets = SHEET_NAMES.map((y, i) => ({
+        label: `ปี ${y}`,
+        data: labels.map(l => (allData[y] ? countOccurrences(allData[y], topic)[l] : 0) || 0),
+        backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+        borderRadius: 5
+      }));
 
       if (comparisonChart) comparisonChart.destroy();
       comparisonChart = new Chart(document.getElementById('comparison-chart'), {
-        type: 'bar',
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top', labels: { font: { family: 'Prompt', weight: 'bold' }, usePointStyle: true } },
+        type: 'bar', data: { labels, datasets },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: { 
+            legend: { position: 'top', labels: { font: { family: 'Prompt' } } },
             tooltip: { titleFont: { family: 'Prompt' }, bodyFont: { family: 'Prompt' } }
-          },
-          scales: {
-            y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
-            x: { grid: { display: false }, ticks: { font: { family: 'Prompt' } } }
-          }
+          } 
         }
       });
     }
@@ -349,8 +315,18 @@
       document.getElementById('topic-content').classList.toggle('hidden', isYear);
     }
 
-    function init() {
+    async function init() {
+      // โหลดปีการศึกษา
+      SHEET_NAMES = await fetchAvailableYears();
+      
       const yearContainer = document.getElementById('year-buttons');
+      yearContainer.innerHTML = '';
+      
+      if (!SHEET_NAMES || SHEET_NAMES.length === 0) {
+        yearContainer.innerHTML = '<p class="text-red-500 text-sm">ไม่พบปีการศึกษาที่สามารถดึงข้อมูลได้</p>';
+        return;
+      }
+
       SHEET_NAMES.forEach(y => {
         const btn = document.createElement('button');
         btn.dataset.year = y;
@@ -369,7 +345,10 @@
         topicContainer.appendChild(btn);
       });
 
-      if (SHEET_NAMES.length > 0) loadYearData(SHEET_NAMES[0]);
+      // โหลดปีล่าสุดที่มีเป็นค่าเริ่มต้น
+      if (SHEET_NAMES.length > 0) {
+        loadYearData(SHEET_NAMES[SHEET_NAMES.length - 1]);
+      }
     }
 
     window.onload = init;
