@@ -3,36 +3,30 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ข้อมูลสารสนเทศนักเรียน โรงรียนวัดแม่กะ</title>
+  <title>ข้อมูลสารสนเทศนักเรียน โรงเรียนวัดแม่กะ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
     body {
       box-sizing: border-box;
       font-family: 'Prompt', sans-serif;
     }
-    
     .gradient-bg {
       background: linear-gradient(135deg, #dc2626 0%, #f59e0b 50%, #fbbf24 100%);
     }
-    
     .card-shadow {
       box-shadow: 0 10px 40px rgba(220, 38, 38, 0.15);
     }
-    
     .tab-active {
       background: linear-gradient(135deg, #dc2626, #ea580c);
       color: white;
       box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
     }
-    
     .chart-container {
       position: relative;
       height: 280px;
     }
-    
     .loading-spinner {
       border: 4px solid #fef3c7;
       border-top: 4px solid #dc2626;
@@ -41,257 +35,198 @@
       height: 50px;
       animation: spin 1s linear infinite;
     }
-    
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
+    .fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
-    .fade-in {
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    
     .stat-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 15px 50px rgba(220, 38, 38, 0.25);
     }
-    
     .pulse-dot {
       animation: pulse 2s infinite;
     }
-    
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: #fef3c7;
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #dc2626, #f59e0b);
-      border-radius: 4px;
-    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #fef3c7; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #dc2626, #f59e0b); border-radius: 4px; }
   </style>
-  <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-  <div id="app" class="h-full overflow-auto"><!-- Header -->
+  <div id="app" class="h-full overflow-auto">
    <header class="gradient-bg text-white py-6 px-4 shadow-2xl">
-    <div class="max-w-7xl mx-auto flex items-center gap-4"><img src="https://img2.pic.in.th/logob0b7643db577ceee.png" alt="Logo" class="w-16 h-16 rounded-full bg-white p-1 shadow-lg" onerror="this.style.background='linear-gradient(135deg, #fbbf24, #f59e0b)'; this.alt='🏫';">
+    <div class="max-w-7xl mx-auto flex items-center gap-4">
+     <img src="https://img2.pic.in.th/logob0b7643db577ceee.png" alt="Logo" class="w-16 h-16 rounded-full bg-white p-1 shadow-lg" onerror="this.src='https://via.placeholder.com/64?text=WMK';">
      <div>
       <h1 id="app-title" class="text-2xl md:text-3xl font-bold drop-shadow-lg">ข้อมูลสารสนเทศนักเรียน</h1>
       <p id="school-name" class="text-amber-100 text-sm md:text-base font-light">โรงเรียนวัดแม่กะ</p>
      </div>
      <div class="ml-auto hidden md:flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-      <div class="w-2 h-2 bg-green-400 rounded-full pulse-dot"></div><span class="text-sm">เชื่อมต่อข้อมูลสำเร็จ</span>
+      <div class="w-2 h-2 bg-green-400 rounded-full pulse-dot"></div>
+      <span class="text-sm">เชื่อมต่อข้อมูลสำเร็จ</span>
      </div>
     </div>
-   </header><!-- Tab Navigation -->
+   </header>
+
    <div class="max-w-7xl mx-auto px-4 py-6">
-    <div class="flex flex-wrap gap-3 mb-6"><button id="tab-year" onclick="switchTab('year')" class="tab-active px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg> ข้อมูลแยกตามรายปี </button> <button id="tab-topic" onclick="switchTab('topic')" class="bg-white text-gray-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:bg-amber-100 flex items-center gap-2 shadow-md">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg> ข้อมูลแยกตามหัวข้อ </button>
-    </div><!-- Year Tab Content -->
-    <div id="year-content" class="fade-in"><!-- Year Selector -->
+    <!-- Tab Navigation -->
+    <div class="flex flex-wrap gap-3 mb-6">
+     <button id="tab-year" onclick="switchTab('year')" class="tab-active px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> ข้อมูลแยกตามรายปี 
+     </button> 
+     <button id="tab-topic" onclick="switchTab('topic')" class="bg-white text-gray-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:bg-amber-100 flex items-center gap-2 shadow-md">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> ข้อมูลแยกตามหัวข้อ 
+     </button>
+    </div>
+
+    <!-- Year Tab Content -->
+    <div id="year-content" class="fade-in">
      <div class="bg-white rounded-2xl p-6 mb-6 card-shadow">
       <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white">📅</span> เลือกปีการศึกษา</h3>
-      <div id="year-buttons" class="flex flex-wrap gap-3"><!-- Year buttons will be inserted here -->
-      </div>
-     </div><!-- Loading State -->
+      <div id="year-buttons" class="flex flex-wrap gap-3"></div>
+     </div>
+
      <div id="loading-year" class="hidden flex flex-col items-center justify-center py-20">
       <div class="loading-spinner mb-4"></div>
       <p class="text-gray-600">กำลังโหลดข้อมูล...</p>
-     </div><!-- Charts Grid -->
-     <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Charts will be inserted here -->
      </div>
-    </div><!-- Topic Tab Content -->
-    <div id="topic-content" class="hidden fade-in"><!-- Topic Selector -->
+
+     <div id="charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- Topic Tab Content -->
+    <div id="topic-content" class="hidden fade-in">
      <div class="bg-white rounded-2xl p-6 mb-6 card-shadow">
       <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white">📊</span> เลือกหัวข้อที่ต้องการเปรียบเทียบ</h3>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"><button onclick="selectTopic('ชั้น')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 🎓 ชั้น </button> <button onclick="selectTopic('เพศ')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 👤 เพศ </button> <button onclick="selectTopic('สัญชาติ')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 🌍 สัญชาติ </button> <button onclick="selectTopic('เชื้อชาติ')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 🧬 เชื้อชาติ </button> <button onclick="selectTopic('ศาสนา')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 🙏 ศาสนา </button> <button onclick="selectTopic('สถานภาพสมรสของบิดามารดา')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 💑 สถานภาพสมรส </button> <button onclick="selectTopic('ตำบล')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 📍 ตำบล </button> <button onclick="selectTopic('อำเภอ')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 🏘️ อำเภอ </button> <button onclick="selectTopic('จังหวัด')" class="topic-btn bg-gradient-to-r from-amber-50 to-orange-50 hover:from-red-100 hover:to-amber-100 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-300 border-2 border-transparent hover:border-red-300"> 🗺️ จังหวัด </button>
-      </div>
-     </div><!-- Loading State -->
+      <div id="topic-buttons" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+     </div>
+
      <div id="loading-topic" class="hidden flex flex-col items-center justify-center py-20">
       <div class="loading-spinner mb-4"></div>
       <p class="text-gray-600">กำลังโหลดข้อมูล...</p>
-     </div><!-- Comparison Chart -->
+     </div>
+
      <div id="comparison-chart-container" class="hidden bg-white rounded-2xl p-6 card-shadow">
-      <h3 id="comparison-title" class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"><span class="w-10 h-10 bg-gradient-to-r from-red-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-lg">📈</span> เปรียบเทียบข้อมูล</h3>
+      <h3 id="comparison-title" class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"></h3>
       <div class="h-96">
        <canvas id="comparison-chart"></canvas>
       </div>
      </div>
     </div>
-   </div><!-- Footer -->
+   </div>
+
    <footer class="gradient-bg text-white py-4 px-4 mt-8">
     <div class="max-w-7xl mx-auto text-center">
      <p class="text-amber-100 text-sm">© 2567 โรงเรียนวัดแม่กะ | ระบบข้อมูลสารสนเทศนักเรียน</p>
     </div>
    </footer>
   </div>
+
   <script>
-    // Configuration
     const API_URL = 'https://script.google.com/macros/s/AKfycbwcrGA_CapQ2P5W7I9q33PAm0mQkwaQbGoNcRQHuAzRGChjIB_2IMP5ew70y4UV1mK0/exec';
     const SHEET_NAMES = ['2566', '2567', '2568'];
     const COLUMNS = ['ชั้น', 'เพศ', 'สัญชาติ', 'เชื้อชาติ', 'ศาสนา', 'สถานภาพสมรสของบิดามารดา', 'ตำบล', 'อำเภอ', 'จังหวัด'];
     const COLUMN_ICONS = {
-      'ชั้น': '🎓',
-      'เพศ': '👤',
-      'สัญชาติ': '🌍',
-      'เชื้อชาติ': '🧬',
-      'ศาสนา': '🙏',
-      'สถานภาพสมรสของบิดามารดา': '💑',
-      'ตำบล': '📍',
-      'อำเภอ': '🏘️',
-      'จังหวัด': '🗺️'
+      'ชั้น': '🎓', 'เพศ': '👤', 'สัญชาติ': '🌍', 'เชื้อชาติ': '🧬', 'ศาสนา': '🙏',
+      'สถานภาพสมรสของบิดามารดา': '💑', 'ตำบล': '📍', 'อำเภอ': '🏘️', 'จังหวัด': '🗺️'
     };
 
-    // Color palette
+    // ปรับปรุงชุดสีให้สดใสและหลากหลาย (Vibrant Palette)
     const CHART_COLORS = [
-      '#dc2626', '#f59e0b', '#fbbf24', '#ea580c', '#ef4444',
-      '#f97316', '#facc15', '#fb923c', '#fcd34d', '#fdba74',
-      '#b91c1c', '#d97706', '#ca8a04', '#c2410c', '#991b1b'
+      '#FF6384', // ชมพูแดง
+      '#36A2EB', // ฟ้าสด
+      '#FFCE56', // เหลืองทอง
+      '#4BC0C0', // เขียวมิ้นท์
+      '#9966FF', // ม่วงสว่าง
+      '#FF9F40', // ส้มสด
+      '#26C6DA', // ฟ้าเทอร์ควอยซ์
+      '#66BB6A', // เขียวสด
+      '#FFA726', // ส้มเหลือง
+      '#AB47BC', // ม่วงกล้วยไม้
+      '#EF5350', // แดงอ่อน
+      '#5C6BC0', // น้ำเงินคราม
+      '#26A69A', // เขียวแกมน้ำเงิน
+      '#D4E157', // เขียวมะนาว
+      '#FFEE58'  // เหลืองสว่าง
     ];
 
-    // State
-    let currentYear = null;
-    let currentTopic = null;
     let allData = {};
     let charts = {};
     let comparisonChart = null;
 
-    // Default config
-    const defaultConfig = {
-      school_name: 'โรงเรียนวัดแม่กะ',
-      app_title: 'ข้อมูลสารสนเทศนักเรียน',
-      primary_color: '#dc2626',
-      secondary_color: '#f59e0b',
-      text_color: '#1f2937',
-      background_color: '#fffbeb',
-      surface_color: '#ffffff'
-    };
-
-    // Initialize Element SDK
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (config) => {
-          document.getElementById('school-name').textContent = config.school_name || defaultConfig.school_name;
-          document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
-        },
-        mapToCapabilities: (config) => ({
-          recolorables: [
-            {
-              get: () => config.background_color || defaultConfig.background_color,
-              set: (value) => window.elementSdk.setConfig({ background_color: value })
-            },
-            {
-              get: () => config.surface_color || defaultConfig.surface_color,
-              set: (value) => window.elementSdk.setConfig({ surface_color: value })
-            },
-            {
-              get: () => config.text_color || defaultConfig.text_color,
-              set: (value) => window.elementSdk.setConfig({ text_color: value })
-            },
-            {
-              get: () => config.primary_color || defaultConfig.primary_color,
-              set: (value) => window.elementSdk.setConfig({ primary_color: value })
-            },
-            {
-              get: () => config.secondary_color || defaultConfig.secondary_color,
-              set: (value) => window.elementSdk.setConfig({ secondary_color: value })
-            }
-          ],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['school_name', config.school_name || defaultConfig.school_name],
-          ['app_title', config.app_title || defaultConfig.app_title]
-        ])
-      });
+    function getValue(row, key) {
+      if (!row) return 'ไม่ระบุ';
+      const actualKey = Object.keys(row).find(k => k.trim() === key.trim());
+      const val = actualKey ? row[actualKey] : null;
+      if (val === null || val === undefined || val === '') return 'ไม่ระบุ';
+      return String(val).trim();
     }
 
-    // Fetch data from Google Apps Script
     async function fetchSheetData(sheetName) {
       try {
         const response = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        return data;
+        return Array.isArray(data) ? data.filter(row => Object.values(row).some(v => v !== '')) : [];
       } catch (error) {
         console.error(`Error fetching data for ${sheetName}:`, error);
         return [];
       }
     }
 
-    // Count occurrences
     function countOccurrences(data, column) {
       const counts = {};
       data.forEach(row => {
-        const value = row[column] || 'ไม่ระบุ';
-        counts[value] = (counts[value] || 0) + 1;
+        const val = getValue(row, column);
+        counts[val] = (counts[val] || 0) + 1;
       });
       return counts;
     }
 
-    // Create chart
-    function createChart(containerId, title, data, icon) {
+    function createChart(columnName, title, data, icon) {
       const container = document.getElementById('charts-grid');
-      const chartId = `chart-${containerId}`;
-      
+      const chartId = `chart-${columnName.replace(/\s+/g, '-')}`;
       const total = Object.values(data).reduce((a, b) => a + b, 0);
       
       const cardHtml = `
-        <div class="bg-white rounded-2xl p-5 card-shadow stat-card transition-all duration-300 fade-in" style="animation-delay: ${Object.keys(charts).length * 0.1}s">
+        <div class="bg-white rounded-2xl p-5 card-shadow stat-card transition-all duration-300 fade-in">
           <h4 class="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <span class="w-8 h-8 bg-gradient-to-r from-red-500 to-amber-500 rounded-lg flex items-center justify-center text-white">${icon}</span>
-            ${title}
-            <span class="ml-auto text-sm font-normal text-gray-500">รวม ${total} คน</span>
+            <span class="truncate">${title}</span>
+            <span class="ml-auto text-xs font-normal text-gray-500 shrink-0">รวม ${total}</span>
           </h4>
           <div class="chart-container">
             <canvas id="${chartId}"></canvas>
           </div>
         </div>
       `;
-      
       container.insertAdjacentHTML('beforeend', cardHtml);
       
       const ctx = document.getElementById(chartId).getContext('2d');
       const labels = Object.keys(data);
       const values = Object.values(data);
-      
-      if (charts[chartId]) {
-        charts[chartId].destroy();
-      }
-      
+      const isBar = labels.length > 5;
+
       charts[chartId] = new Chart(ctx, {
-        type: labels.length > 5 ? 'bar' : 'doughnut',
+        type: isBar ? 'bar' : 'doughnut',
         data: {
           labels: labels,
           datasets: [{
             data: values,
             backgroundColor: CHART_COLORS.slice(0, labels.length),
-            borderWidth: labels.length > 5 ? 0 : 3,
-            borderColor: '#ffffff',
-            borderRadius: labels.length > 5 ? 8 : 0
+            borderWidth: isBar ? 0 : 2,
+            borderColor: '#fff',
+            borderRadius: isBar ? 8 : 0
           }]
         },
         options: {
@@ -299,259 +234,145 @@
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: labels.length > 5 ? 'top' : 'right',
-              labels: {
-                font: { family: 'Prompt', size: 11 },
-                padding: 10,
-                usePointStyle: true,
-                pointStyle: 'circle'
-              }
+              display: !isBar,
+              position: 'right',
+              labels: { font: { family: 'Prompt', size: 10 }, usePointStyle: true, padding: 10 }
             },
             tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleFont: { family: 'Prompt' },
+              bodyFont: { family: 'Prompt' },
               callbacks: {
-                label: function(context) {
-                  const value = context.raw;
-                  const percentage = ((value / total) * 100).toFixed(1);
-                  return `${context.label}: ${value} คน (${percentage}%)`;
-                }
-              },
-              backgroundColor: 'rgba(220, 38, 38, 0.9)',
-              titleFont: { family: 'Prompt', size: 14 },
-              bodyFont: { family: 'Prompt', size: 13 },
-              padding: 12,
-              cornerRadius: 10
-            }
-          },
-          scales: labels.length > 5 ? {
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(0,0,0,0.05)' },
-              ticks: { font: { family: 'Prompt' } }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { 
-                font: { family: 'Prompt', size: 10 },
-                maxRotation: 45,
-                minRotation: 45
+                label: (ctx) => `${ctx.label}: ${ctx.raw} คน (${((ctx.raw/total)*100).toFixed(1)}%)`
               }
             }
+          },
+          scales: isBar ? {
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { font: { family: 'Prompt', size: 10 } } },
+            x: { grid: { display: false }, ticks: { font: { family: 'Prompt', size: 10 } } }
           } : {}
         }
       });
     }
 
-    // Load year data
     async function loadYearData(year) {
-      currentYear = year;
-      
-      // Update button styles
       document.querySelectorAll('#year-buttons button').forEach(btn => {
-        btn.classList.remove('bg-gradient-to-r', 'from-red-500', 'to-amber-500', 'text-white', 'shadow-lg');
-        btn.classList.add('bg-amber-100', 'text-gray-700');
+        btn.classList.remove('tab-active');
+        btn.classList.add('bg-white', 'text-gray-700');
       });
-      
-      const activeBtn = document.querySelector(`#year-buttons button[data-year="${year}"]`);
+      const activeBtn = document.querySelector(`button[data-year="${year}"]`);
       if (activeBtn) {
-        activeBtn.classList.remove('bg-amber-100', 'text-gray-700');
-        activeBtn.classList.add('bg-gradient-to-r', 'from-red-500', 'to-amber-500', 'text-white', 'shadow-lg');
+        activeBtn.classList.add('tab-active');
+        activeBtn.classList.remove('bg-white', 'text-gray-700');
       }
-      
-      // Show loading
+
       document.getElementById('loading-year').classList.remove('hidden');
       document.getElementById('charts-grid').innerHTML = '';
       
-      // Destroy existing charts
-      Object.values(charts).forEach(chart => chart.destroy());
+      Object.values(charts).forEach(c => c.destroy());
       charts = {};
-      
-      // Fetch data if not cached
-      if (!allData[year]) {
-        allData[year] = await fetchSheetData(year);
-      }
-      
+
+      if (!allData[year]) allData[year] = await fetchSheetData(year);
       const data = allData[year];
-      
-      // Hide loading
+
       document.getElementById('loading-year').classList.add('hidden');
-      
-      if (data.length === 0) {
-        document.getElementById('charts-grid').innerHTML = `
-          <div class="col-span-full text-center py-10 text-gray-500">
-            <div class="text-6xl mb-4">📭</div>
-            <p>ไม่พบข้อมูลสำหรับปี ${year}</p>
-          </div>
-        `;
+
+      if (!data || data.length === 0) {
+        document.getElementById('charts-grid').innerHTML = `<p class="col-span-full text-center py-10 text-gray-400">ไม่พบข้อมูลของปี ${year}</p>`;
         return;
       }
-      
-      // Create charts for each column
-      COLUMNS.forEach(column => {
-        const counts = countOccurrences(data, column);
-        createChart(column.replace(/[^a-zA-Z0-9ก-๙]/g, ''), column, counts, COLUMN_ICONS[column]);
+
+      COLUMNS.forEach(col => {
+        const counts = countOccurrences(data, col);
+        createChart(col, col, counts, COLUMN_ICONS[col]);
       });
     }
 
-    // Select topic for comparison
-    async function selectTopic(topic) {
-      currentTopic = topic;
-      
-      // Update button styles
-      document.querySelectorAll('.topic-btn').forEach(btn => {
-        btn.classList.remove('ring-2', 'ring-red-500', 'bg-red-100');
-      });
-      
-      event.target.closest('button').classList.add('ring-2', 'ring-red-500', 'bg-red-100');
-      
-      // Show loading
+    async function selectTopic(topic, element) {
+      document.querySelectorAll('.topic-btn').forEach(btn => btn.classList.remove('ring-2', 'ring-red-500', 'bg-red-50'));
+      element.classList.add('ring-2', 'ring-red-500', 'bg-red-50');
+
       document.getElementById('loading-topic').classList.remove('hidden');
       document.getElementById('comparison-chart-container').classList.add('hidden');
-      
-      // Fetch all years data
-      for (const year of SHEET_NAMES) {
-        if (!allData[year]) {
-          allData[year] = await fetchSheetData(year);
-        }
-      }
-      
-      // Hide loading
+
+      for (const y of SHEET_NAMES) { if (!allData[y]) allData[y] = await fetchSheetData(y); }
+
       document.getElementById('loading-topic').classList.add('hidden');
       document.getElementById('comparison-chart-container').classList.remove('hidden');
-      
-      // Update title
       document.getElementById('comparison-title').innerHTML = `
         <span class="w-10 h-10 bg-gradient-to-r from-red-500 to-amber-500 rounded-xl flex items-center justify-center text-white text-lg">${COLUMN_ICONS[topic]}</span>
-        เปรียบเทียบ${topic}ระหว่างปี
+        เปรียบเทียบข้อมูล: ${topic}
       `;
-      
-      // Prepare comparison data
-      const allLabels = new Set();
-      SHEET_NAMES.forEach(year => {
-        const counts = countOccurrences(allData[year] || [], topic);
-        Object.keys(counts).forEach(label => allLabels.add(label));
+
+      const allLabelsSet = new Set();
+      SHEET_NAMES.forEach(y => {
+          const counts = countOccurrences(allData[y], topic);
+          Object.keys(counts).forEach(l => allLabelsSet.add(l));
       });
-      
-      const labels = Array.from(allLabels);
-      const datasets = SHEET_NAMES.map((year, index) => {
-        const counts = countOccurrences(allData[year] || [], topic);
+      const labels = Array.from(allLabelsSet);
+
+      const datasets = SHEET_NAMES.map((y, i) => {
+        const counts = countOccurrences(allData[y], topic);
         return {
-          label: `ปี ${year}`,
-          data: labels.map(label => counts[label] || 0),
-          backgroundColor: CHART_COLORS[index * 3],
-          borderColor: CHART_COLORS[index * 3],
-          borderWidth: 2,
-          borderRadius: 8
+          label: `ปี ${y}`,
+          data: labels.map(l => counts[l] || 0),
+          backgroundColor: CHART_COLORS[i * 2 % CHART_COLORS.length], // เลือกสีจากชุดสีสดใส
+          borderColor: 'transparent',
+          borderRadius: 6
         };
       });
-      
-      // Create comparison chart
-      const ctx = document.getElementById('comparison-chart').getContext('2d');
-      
-      if (comparisonChart) {
-        comparisonChart.destroy();
-      }
-      
-      comparisonChart = new Chart(ctx, {
+
+      if (comparisonChart) comparisonChart.destroy();
+      comparisonChart = new Chart(document.getElementById('comparison-chart'), {
         type: 'bar',
-        data: {
-          labels: labels,
-          datasets: datasets
-        },
+        data: { labels, datasets },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'top',
-              labels: {
-                font: { family: 'Prompt', size: 13, weight: '500' },
-                padding: 20,
-                usePointStyle: true,
-                pointStyle: 'circle'
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const year = context.dataset.label;
-                  const value = context.raw;
-                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = ((value / total) * 100).toFixed(1);
-                  return `${year}: ${value} คน (${percentage}%)`;
-                }
-              },
-              backgroundColor: 'rgba(220, 38, 38, 0.9)',
-              titleFont: { family: 'Prompt', size: 14 },
-              bodyFont: { family: 'Prompt', size: 13 },
-              padding: 12,
-              cornerRadius: 10
-            }
+            legend: { position: 'top', labels: { font: { family: 'Prompt', weight: 'bold' }, usePointStyle: true } },
+            tooltip: { titleFont: { family: 'Prompt' }, bodyFont: { family: 'Prompt' } }
           },
           scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(0,0,0,0.05)' },
-              ticks: { font: { family: 'Prompt' } }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { 
-                font: { family: 'Prompt', size: 11 },
-                maxRotation: 45,
-                minRotation: 45
-              }
-            }
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+            x: { grid: { display: false }, ticks: { font: { family: 'Prompt' } } }
           }
         }
       });
     }
 
-    // Switch tabs
     function switchTab(tab) {
-      const yearTab = document.getElementById('tab-year');
-      const topicTab = document.getElementById('tab-topic');
-      const yearContent = document.getElementById('year-content');
-      const topicContent = document.getElementById('topic-content');
-      
-      if (tab === 'year') {
-        yearTab.className = 'tab-active px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2';
-        topicTab.className = 'bg-white text-gray-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:bg-amber-100 flex items-center gap-2 shadow-md';
-        yearContent.classList.remove('hidden');
-        topicContent.classList.add('hidden');
-      } else {
-        topicTab.className = 'tab-active px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2';
-        yearTab.className = 'bg-white text-gray-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:bg-amber-100 flex items-center gap-2 shadow-md';
-        topicContent.classList.remove('hidden');
-        yearContent.classList.add('hidden');
-      }
+      const isYear = tab === 'year';
+      document.getElementById('tab-year').className = isYear ? 'tab-active px-6 py-3 rounded-xl font-medium flex items-center gap-2' : 'bg-white text-gray-700 px-6 py-3 rounded-xl font-medium shadow-md flex items-center gap-2';
+      document.getElementById('tab-topic').className = !isYear ? 'tab-active px-6 py-3 rounded-xl font-medium flex items-center gap-2' : 'bg-white text-gray-700 px-6 py-3 rounded-xl font-medium shadow-md flex items-center gap-2';
+      document.getElementById('year-content').classList.toggle('hidden', !isYear);
+      document.getElementById('topic-content').classList.toggle('hidden', isYear);
     }
 
-    // Initialize
-    async function init() {
-      // Create year buttons
-      const yearButtonsContainer = document.getElementById('year-buttons');
-      SHEET_NAMES.forEach(year => {
+    function init() {
+      const yearContainer = document.getElementById('year-buttons');
+      SHEET_NAMES.forEach(y => {
         const btn = document.createElement('button');
-        btn.dataset.year = year;
-        btn.className = 'bg-amber-100 text-gray-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-red-500 hover:to-amber-500 hover:text-white flex items-center gap-2 shadow-md';
-        btn.innerHTML = `
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-          ปี ${year}
-        `;
-        btn.onclick = () => loadYearData(year);
-        yearButtonsContainer.appendChild(btn);
+        btn.dataset.year = y;
+        btn.className = 'bg-white text-gray-700 px-6 py-3 rounded-xl font-medium transition-all shadow-md hover:bg-amber-50 border border-amber-100';
+        btn.innerHTML = `ปีการศึกษา ${y}`;
+        btn.onclick = () => loadYearData(y);
+        yearContainer.appendChild(btn);
       });
-      
-      // Load first year by default
-      if (SHEET_NAMES.length > 0) {
-        loadYearData(SHEET_NAMES[0]);
-      }
+
+      const topicContainer = document.getElementById('topic-buttons');
+      COLUMNS.forEach(topic => {
+        const btn = document.createElement('button');
+        btn.className = 'topic-btn bg-white text-gray-700 px-4 py-3 rounded-xl font-medium transition-all shadow-sm border border-amber-100 hover:bg-amber-50 flex items-center gap-2';
+        btn.innerHTML = `<span>${COLUMN_ICONS[topic]}</span> <span class="truncate">${topic}</span>`;
+        btn.onclick = (e) => selectTopic(topic, e.currentTarget);
+        topicContainer.appendChild(btn);
+      });
+
+      if (SHEET_NAMES.length > 0) loadYearData(SHEET_NAMES[0]);
     }
 
-    // Start app
-    init();
+    window.onload = init;
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c7a6575c6aa819e',t:'MTc3MDA0MjczMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ </body>
 </html>
